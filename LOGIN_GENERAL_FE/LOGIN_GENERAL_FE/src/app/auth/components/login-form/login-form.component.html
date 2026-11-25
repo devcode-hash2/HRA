@@ -1,0 +1,239 @@
+<!--
+  Sección principal de login.
+  - Muestra el logo y botón de manuales.
+  - Formulario reactivo para login con validaciones y mensajes de error.
+  - Botón para mostrar/ocultar contraseña.
+  - Mensajes de carga y feedback visual.
+  - Pie de página con derechos de autor.
+-->
+<section class="bg-transparent bg-bg-login h-screen w-screen bg-cover bg-center fixed top-0 overflow-x-auto">
+    <div class="bg-primary-600 w-full h-16 top-0 absolute flex align-middle text-center">
+        <div class="ml-6 mt-auto mb-auto font-medium">
+            <img class="w-44" src="assets/images/logo-login.png" alt="logo login"/>
+        </div>
+        <div class="mt-auto mb-auto ml-auto mr-6">
+            <button type="button" class="block mr-0 w-32 py-2 drop-shadow-lg font-sans text-white bg-primary-500 hover:bg-primary-700 focus:outline-none font-medium rounded-lg text-sm">
+                Manuales
+            </button>
+        </div>
+    </div>
+
+    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0">
+      <div class="w-full bg-white rounded-lg md:mt-0 sm:max-w-md xl:p-0 shadow-2xl">
+        <div class="p-6 space-y-6 items-center text-center">
+            <a href="#" class="flex mb-6">
+                <img src="assets/images/logo-admin.png" class="w-64 mx-auto" alt="logo">
+            </a>
+            <h1 class="text-xl font-sans leading-tight tracking-tight font-normal text-gray-800 text-center">
+                APP HOSPITAL REGIONAL DE AYACUCHO
+            </h1>
+            <form [formGroup]="formLogin" (ngSubmit)="login()" class="space-y-1" action="#" autocomplete="off">
+                <label for="Username" class="relative block w-auto">
+                    <input #usernameInput type="text" formControlName="v_user" autocomplete="off" id="Username" placeholder="Usuario" maxlength="20"
+                        [ngClass]="getUserFieldForm?.hasError('required') && isUserFieldInvalidForm ? 'border-red-600 focus:border-red-600 focus:ring-red-600' : ''"
+                        [ngClass]="getUserFieldForm?.hasError('minlength') || formLogin.controls.v_user.hasError('pattern') ? 'border-red-600 focus:border-red-600 focus:ring-red-600' : ''"
+                        class="block p-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-gray-400 appearance-none border
+                        focus:outline-none focus:border-primary-700 focus:ring-primary-700 peer focus:ring-1" />
+                    <span
+                        [ngClass]="getUserFieldForm?.hasError('required') && isUserFieldInvalidForm ? 'text-red-600' : ''"
+                        [ngClass]="getUserFieldForm?.hasError('minlength') || formLogin.controls.v_user.hasError('pattern') ? 'text-red-600' : ''"
+                        class="w-14 text-left  absolute start-2.5  -translate-y-1/2 bg-white p-0.5  text-primary-700 transition-all text-sm top-0 ">
+                        Usuario
+                    </span>
+                </label>
+                <div class="w-full h-7 text-left">
+                    <span class="block ml-3 -mt-1 text-red-600 text-sm">
+                        @if (getUserFieldForm?.hasError('required') && isUserFieldInvalidForm) {
+                            El usuario es requerido
+                        }
+                        @if (getUserFieldForm?.hasError('minlength') || formLogin.controls.v_user.hasError('pattern')) {
+                            Ingrese un usuario válido
+                        }
+                    </span>
+                </div>
+                <label for="Password" class="relative block">
+                    <input [type]="hidePass ? 'password' : 'text'" formControlName="v_password" autocomplete="off" id="Password" placeholder="Contraseña" maxlength="20"
+                        [ngClass]="getPasswordFieldForm?.hasError('required') && isPasswordFieldInvalidForm ? 'border-red-600 focus:border-red-600 focus:ring-red-600' : ''"
+                        [ngClass]="getPasswordFieldForm?.hasError('minlength') ? 'border-red-600 focus:border-red-600 focus:ring-red-600' : ''"
+                        class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-white rounded-lg border-gray-400 appearance-none border
+                        focus:outline-none focus:border-primary-700 peer focus:ring-1 focus:ring-primary-700"/>
+                    <span
+                        [ngClass]="getPasswordFieldForm?.hasError('required') && isPasswordFieldInvalidForm ? 'text-red-600' : ''"
+                        [ngClass]="getPasswordFieldForm?.hasError('minlength') ? 'text-red-600' : ''"
+                        class="w-20 text-left  absolute start-2.5  -translate-y-1/2 bg-white p-0.5  text-primary-700 transition-all text-sm top-0 ">
+                        Contraseña
+                    </span>
+
+                    <button type="button" (click)="hidePass = !hidePass" class="text-primary-700 text-xl absolute right-2 top-2" [disabled]="loading">
+                        @if (hidePass) {
+                            <fa-icon [icon]="faEyeSlash" class="icon-login"></fa-icon>
+                        }@else {
+                            <fa-icon [icon]="faEye" class="icon-login"></fa-icon>
+                        }
+                    </button>
+                </label>
+                <div class="w-full h-7 text-left">
+                    <span class="block ml-3 -mt-1 text-red-600 text-sm">
+                        @if (getPasswordFieldForm?.hasError('required') && isPasswordFieldInvalidForm) {
+                            La contraseña es requerida
+                        }
+                        @if (getPasswordFieldForm?.hasError('minlength')) {
+                            Contraseña mínima 3 caracteres
+                        }
+                    </span>
+                </div>
+
+                <button type="submit" class="w-44 py-2 text-white bg-primary-500 hover:bg-primary-700 focus:outline-none font-medium rounded-lg text-sm px-5 text-center items-center font-sans"
+                    [disabled]="loading">
+
+                    @if (!loading) {
+                        Ingresar
+                    }@else {
+                        <span class="text-center font-sans text-white ml-4">Ingresando </span>
+                        <div role="status" class="float-right mr-3">
+                            <svg aria-hidden="true" class="h-5 w-5  animate-spin text-primary-500 fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                            </svg>
+                        </div>
+                    }
+                </button>
+            </form>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white w-full h-14 bottom-0 absolute flex align-middle text-center">
+        <div class="m-auto font-medium">
+            <p> Copyright &copy; 2023 Hospital Regional de Ayacucho Inc. Todos los derechos reservados. </p>
+        </div>
+    </div>
+</section>
+
+<!--
+  Modal para cambio de contraseña.
+  - Formulario reactivo con validaciones y mensajes de error.
+  - Botones para mostrar/ocultar contraseñas.
+  - Feedback visual de carga y acciones.
+-->
+<app-modal-first [title]="'CAMBIO DE CONTRASEÑA'" [isOpen]="modalChangePasswOpen" [isCloseOut]="false" (confirm)="saveChangePassword()" (cancelModal)="closeModal()">
+    <div class="lg:w-96 md:w-72 sm:w-full">
+        <form [formGroup]="formChangePassw">
+            <div class="w-auto relative mb-8">
+                <label for="passwordOld">
+                    <input #passwordOldInput [type]="hidePassOld ? 'password' : 'text'" autocomplete="off" id="passwordOld" placeholder="Contraseña anterior" formControlName="passwordOld" tabindex="1"
+                        [ngClass]="{ 'border-red-600 focus:border-red-600 focus:ring-red-600' : getFieldForm('passwordOld', formChangePassw)?.hasError('required') && getInvalidForm('passwordOld', formChangePassw) } "
+                        class="w-full sm:w-full block p-2.5 pt-4 text-sm border-gray-400 text-gray-900 font-medium bg-white rounded-md appearance-none border focus:outline-none focus:border-primary-700 focus:ring-primary-700 peer focus:ring-1" />
+                    <span
+                        [ngClass]="getFieldForm('passwordOld', formChangePassw)?.hasError('required') && getInvalidForm('passwordOld', formChangePassw) ? 'text-red-600' : ''"
+                        class="pointer-events-none absolute start-2.5 top-1 -translate-y-1/2 bg-white p-0.5 text-sm text-primary-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-sm">
+                    Contraseña anterior
+                    </span>
+
+                    <button type="button" (click)="hidePassOld = !hidePassOld" class="text-primary-700 text-xl absolute right-2 top-2" [disabled]="loading">
+                    @if (hidePassOld) {
+                        <fa-icon [icon]="faEyeSlash" class="icon-login"></fa-icon>
+                    }@else {
+                        <fa-icon [icon]="faEye" class="icon-login"></fa-icon>
+                    }
+                    </button>
+                </label>
+                @if (getFieldForm('passwordOld', formChangePassw)?.hasError('required') && getInvalidForm('passwordOld', formChangePassw)) {
+                    <div class="mb-0 flex text-left absolute pt-1">
+                        <span class="block ml-3 -mt-1 text-red-600 text-xs">
+                            La contraseña anterior es requerida.
+                        </span>
+                    </div>
+                }
+            </div>
+            <div class="w-auto relative mb-8">
+                <label for="passwordNew">
+                <input [type]="hidePassNew ? 'password' : 'text'" autocomplete="off" id="passwordNew" placeholder="Nueva contraseña" formControlName="passwordNew" tabindex="2"
+                    [ngClass]="{ 'border-red-600 focus:border-red-600 focus:ring-red-600' : getFieldForm('passwordNew', formChangePassw)?.hasError('required') && getInvalidForm('passwordNew', formChangePassw) } "
+                    class="w-full sm:w-full block p-2.5 pt-4 text-sm border-gray-400 text-gray-900 font-medium bg-white rounded-md appearance-none border focus:outline-none focus:border-primary-700 focus:ring-primary-700 peer focus:ring-1" />
+                <span
+                    [ngClass]="getFieldForm('passwordNew', formChangePassw)?.hasError('required') && getInvalidForm('passwordNew', formChangePassw) ? 'text-red-600' : ''"
+                    class="pointer-events-none absolute start-2.5 top-1 -translate-y-1/2 bg-white p-0.5 text-sm text-primary-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-sm">
+                    Nueva contraseña
+                </span>
+                <button type="button" (click)="hidePassNew = !hidePassNew" class="text-primary-700 text-xl absolute right-2 top-2" [disabled]="loading">
+                    @if (hidePassNew) {
+                        <fa-icon [icon]="faEyeSlash" class="icon-login"></fa-icon>
+                    }@else {
+                        <fa-icon [icon]="faEye" class="icon-login"></fa-icon>
+                    }
+                </button>
+                </label>
+                @if (getFieldForm('passwordNew', formChangePassw)?.hasError('required') && getInvalidForm('passwordNew', formChangePassw)) {
+                    <div class="mb-0 flex text-left absolute pt-1">
+                        <span class="block ml-3 -mt-1 text-red-600 text-xs">
+                        La contraseña nueva es requerida.
+                        </span>
+                    </div>
+                }
+                @if (passwordDistinct) {
+                    <div class="mb-0 flex text-left absolute pt-1">
+                        <span class="block ml-3 -mt-1 text-red-600 text-xs">
+                        Las contraseñas no coinciden.
+                        </span>
+                    </div>
+                }
+            </div>
+            <div class="w-auto relative mb-8">
+                <label for="passwordNewRep">
+                    <input [type]="hidePassNewRep ? 'password' : 'text'" autocomplete="off" id="passwordNewRep" placeholder="Repita nueva contraseña" formControlName="passwordNewRep" tabindex="3"
+                        [ngClass]="{ 'border-red-600 focus:border-red-600 focus:ring-red-600' : getFieldForm('passwordNewRep', formChangePassw)?.hasError('required') && getInvalidForm('passwordNewRep', formChangePassw) } "
+                        class="w-full sm:w-full block p-2.5 pt-4 text-sm border-gray-400 text-gray-900 font-medium bg-white rounded-md appearance-none border focus:outline-none focus:border-primary-700 focus:ring-primary-700 peer focus:ring-1" />
+                    <span [ngClass]="getFieldForm('passwordNewRep', formChangePassw)?.hasError('required') && getInvalidForm('passwordNewRep', formChangePassw) ? 'text-red-600' : ''"
+                        class="pointer-events-none absolute start-2.5 top-1 -translate-y-1/2 bg-white p-0.5 text-sm text-primary-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-sm">
+                        Repita nueva contraseña
+                    </span>
+                    <button type="button" (click)="hidePassNewRep = !hidePassNewRep" class="text-primary-700 text-xl absolute right-2 top-2" [disabled]="loading">
+                        @if (hidePassNewRep) {
+                            <fa-icon [icon]="faEyeSlash" class="icon-login"></fa-icon>
+                        }@else {
+                            <fa-icon [icon]="faEye" class="icon-login"></fa-icon>
+                        }
+                    </button>
+                </label>
+
+                @if (getFieldForm('passwordNewRep', formChangePassw)?.hasError('required') && getInvalidForm('passwordNewRep', formChangePassw)) {
+                <div class="mb-0 flex text-left absolute pt-1">
+                    <span class="block ml-3 -mt-1 text-red-600 text-xs">
+                        La contraseña nueva es requerida.
+                    </span>
+                </div>
+                }
+                @if (passwordDistinct) {
+                    <div class="mb-0 flex text-left absolute pt-1">
+                        <span class="block ml-3 -mt-1 text-red-600 text-xs">
+                        Las contraseñas no coinciden.
+                        </span>
+                    </div>
+                }
+            </div>
+
+            <div class="flex w-full ml-auto">
+                <button type="button" (click)="closeModal()" class="bg-gray-300 pr-6 pl-6 pt-2 pb-2 rounded-md shadow-md text-sm font-bold text-gray-800 ml-auto
+                        hover:opacity-95 hover:shadow-lg border-gray-300 border" [disabled]="loading">
+                    <fa-icon [icon]="faXmark" class="block float-left pr-2"></fa-icon> Cancelar
+                </button>
+
+                <button type="button" (click)="saveChangePassword()" class="bg-secondary-600 pr-6 pl-6 pt-2 pb-2 rounded-md shadow-md text-sm font-bold ml-4 text-white
+                        hover:opacity-95 hover:shadow-lg border-gray-300 border"
+                        [disabled]="loading">
+                    @if (!loading) {
+                        <fa-icon [icon]="faFloppyDisk" class="block float-left pr-2"></fa-icon> Guardar
+                    }@else {
+                        Guardando
+                        <div role="status" class="float-right pl-2">
+                            <svg aria-hidden="true" class="h-5 w-5 animate-spin text-secondary-600 fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                            </svg>
+                        </div>
+                    }
+                </button>
+            </div>
+        </form>
+    </div>
+</app-modal-first>

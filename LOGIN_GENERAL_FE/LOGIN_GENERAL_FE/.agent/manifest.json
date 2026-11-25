@@ -1,0 +1,63 @@
+{
+  "version": "1.1.0",
+  "released_at": "2026-04-21",
+  "domain": "FE",
+  "sections": {
+    "workflows": [
+      {
+        "file": "README.md",
+        "sha256": "a76c4e35e86e102c8ca3fe159f94ea0d244e2807fd161ffc5078b466b2802a0a"
+      },
+      {
+        "file": "fix-429-cookie-loop.md",
+        "sha256": "fac2cc75ffa0c942da0d338222c4e27d20ab8773698339017edc2a8aecf2bf50"
+      },
+      {
+        "file": "lecciones-aprendidas.md",
+        "sha256": "c07f6f0e434fec6f5ac73500fe0d013cc6021840f71d91d2b36690a2a75dee99"
+      },
+      {
+        "file": "migrate-deploy.md",
+        "sha256": "02e2ac32ff155e7047d5b6ddd49ad15d7b08479dbd71d909882758f68e0ad1c9"
+      },
+      {
+        "file": "modal-close-button-style.md",
+        "sha256": "09f3554f31d299574678f83655dfae79c34ab5dcd54a0f0e37588ed1db37b951"
+      },
+      {
+        "file": "sync-deploy-changes.md",
+        "sha256": "3bd0f2322e585e916478f36759b05a6778e3681de93344a5ee2b3eff3d63530f"
+      },
+      {
+        "file": "update-readme.md",
+        "sha256": "27e43782db48152d7d549d0266da73afde89cab830e54f78bd4b443a19d79d51"
+      },
+      {
+        "file": "workflow-recipes.md",
+        "sha256": "b3f4c38fe585dac722b11778df192f56a962e56d1d753329776274f88ac176d2"
+      }
+    ],
+    "skills": [
+      {
+        "file": "README.md",
+        "sha256": "14af84d69013c16c037aaa4f7b0d2eb341899e5e30edf3fd5fdeeab60343333f"
+      },
+      {
+        "file": "skill-fe-auth-cookie-hardening.md",
+        "sha256": "e0bec179f4200464777cbb93661b9381b21b81e0745724b4e3a801bd9fa02add"
+      },
+      {
+        "file": "skill-fe-deploy-migration.md",
+        "sha256": "3884ea81fddd536189695abc04ff071d1d061076f9156ee5731ce43cb4ef548b"
+      },
+      {
+        "file": "skill-fe-ui-consistency.md",
+        "sha256": "45135b699f3a53d72fe5905cd44a4c48c051e676bbd21834fb4b967a3391aca5"
+      },
+      {
+        "file": "skill-central-workflow-router.md",
+        "sha256": "28091f6b26d473cf5065e774ff4eee2ecabba52524008af0f4d580fb35bb6424"
+      }
+    ]
+  }
+}

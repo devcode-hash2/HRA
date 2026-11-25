@@ -1,0 +1,298 @@
+<!--
+  Loader de carga global para operaciones asíncronas.
+-->
+<!-- <div [ngClass]="loadingIsOpen ? 'block' : 'hidden'" class="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto overflow-x-auto">
+   <div class="relative max-h-full top-4">
+       <div class="loader"></div>
+   </div>
+</div> -->
+
+<div [ngClass]="loadingIsOpen ? 'block' : 'hidden'" class="bg-gray-50 opacity-30 fixed inset-0 flex items-center justify-center z-50 overflow-auto">
+</div>
+<div [ngClass]="loadingIsOpen ? 'block' : 'hidden'" class="opacity-100 absolute z-50 top-1/2 left-1/2">
+    <div class="flex">
+        <div class="m-auto text-purple-800 text-lg bg-gray-50 rounded-md">
+            <span class="font-bold shadow-md block p-2 ">Cargando...</span>
+        </div>
+        <div class="ml-2 flex max-h-full">
+            <div class="m-auto loader"></div>
+        </div>
+    </div>
+</div>
+
+<!--
+  Barra de navegación superior con datos de usuario y menú de acciones.
+-->
+<!-- nav superior -->
+<div class="fixed top-0 w-screen h-16 overflow-x-auto bg-primary-500 z-40 shadow-[0.5px_5.5px_9px_-3px_#7A7878]">
+   <div class="flex h-full w-auto transition-all duration-300 transform">
+      <div class="p-2">
+         <img eager="lazy" class="ml-6 m-auto img-logo-hra w-32" src="assets/images/logo-login.png" alt="logo" />
+      </div>
+      <span class="max-sm:hidden block text-white mt-auto mb-auto pl-6 font-medium">
+          LISTADO DE APLICATIVOS
+      </span>
+      <div class="mr-0 w-auto h-full m-auto pr-4 flex hover:cursor-pointer" (click)="toggleMenuUser($event)">
+         <div class="max-sm:hidden h-auto w-auto m-auto text-white float-left pr-4 leading-5 font-medium text-sm">
+            <span class="m-auto text-left">
+               {{ profile?.firstName }} {{ profile?.paternal_surname }}
+            </span><br>
+            <span>
+               {{ displayedRole }}
+            </span>
+         </div>
+         <button type="button" class="h-full block float-right">
+            <img [src]="imgperfil" alt="Image Source" class="rounded-full w-10 mx-auto" alt="logo">
+         </button>
+      </div>
+   </div>
+</div>
+
+<!--
+  Menú de usuario desplegable con opciones de perfil, cambio de contraseña y logout.
+-->
+ <!-- menu de usuario -->
+<div (document:click)="onClickOutside()"
+   [ngClass]="activeMenuUser ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1 hidden'"
+   class="fixed z-50 w-auto h-auto top-14 right-4 border bg-white rounded-md shadow-2xl overflow-hidden transition-all duration-300 transform">
+   <ul class="pt-2 pb-2">
+      <li class="block w-full hover:bg-gray-100">
+         <button type="button" class="block pt-3 pb-3 pl-4 pr-4 w-full text-left" (click)="openModalProfile()">
+            <fa-icon [icon]="faUser" class="block float-left pr-3"></fa-icon> Perfil
+         </button>
+      </li>
+      <li class="block w-full hover:bg-gray-100">
+         <button type="button" class="block pt-3 pb-3 pl-4 pr-4 w-full text-left" (click)="openModalChangePassw()">
+            <fa-icon [icon]="faLock" class="block float-left pr-3"></fa-icon> Cambiar contraseña
+         </button>
+      </li>
+      <li class="block w-full hover:bg-gray-100">
+         <button type="button" (click)="logout()" class="block pt-3 pb-3 pl-4 pr-4 w-full text-left">
+            <fa-icon [icon]="faArrowRightFromBracket" class="block float-left pr-3"></fa-icon> Salir
+         </button>
+      </li>
+   </ul>
+</div>
+
+<!--
+  Modal de perfil de usuario.
+-->
+<!-- modal perfil  -->
+<app-modal-first [title]="'PERFIL'" [isOpen]="modalProfileOpen" [isCloseOut]="true" (confirm)="openModalProfile()" (cancelModal)="closeModal()">
+   <div class="pr-7 pl-7">
+      <img [src]="imgperfil" alt="Usuario" class="w-40 rounded-full m-auto shadow-gray-300 shadow-sm "><br>
+      <div class="space-y-3">
+         <p class="font-bold">
+            Usuario:
+            <span class="font-normal"> {{ profile?.numberDni }} </span>
+         </p>
+         <p class="font-bold">
+            Nombre:
+            <span class="font-normal"> {{ profile?.firstName }}
+               @if (profile?.secondName != "") {
+                  {{ profile?.secondName }}
+               }
+               {{ profile?.paternal_surname }} {{ profile?.maternal_surname }}
+            </span></p>
+      </div>
+   </div>
+</app-modal-first>
+
+<!--
+  Grid de tarjetas de aplicaciones disponibles para el usuario.
+  - Cada tarjeta permite abrir la app correspondiente.
+-->
+ <!-- contenido -->
+<div class="pt-20 px-4 py-4 w-full">
+   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      @for (app of valueListApp; track app.aplicaciones.id_app) {
+
+      <article class="group p-4 rounded-2xl bg-gray-100 shadow-md border border-transparent 
+               cursor-pointer text-center transition-all duration-300
+               hover:-translate-y-1 hover:shadow-lg hover:shadow-black/25 hover:border-gray-300"
+         [ngClass]="{'pointer-events-none opacity-50': loadingIsOpen}"
+         (click)="openAppByToken(app.aplicaciones.url ?? '', app.aplicaciones.id_app)">
+
+         <img loading="lazy" [src]="sanitizeImage(app.aplicaciones.image ?? '')"
+            alt="Logo de {{ app.aplicaciones.application }}"
+            class="w-40 mx-auto transition-transform duration-500 ease-in-out group-hover:scale-[1.10]">
+
+         <p class="mt-2 text-gray-800 font-medium">
+            {{ app.aplicaciones.application }} ({{ app.aplicaciones.acronym }})
+         </p>
+
+      </article>
+
+      }
+   </div>
+</div>
+
+<!--
+  Modal para cambio de contraseña.
+-->
+<!-- modal cambiar contraseña  -->
+<app-modal-first [title]="'CAMBIO DE CONTRASEÑA'" [isOpen]="modalChangePasswOpen" [isCloseOut]="false" (confirm)="saveChangePassword()" (cancelModal)="closeModal()">
+   <div class="lg:w-96 md:w-72 sm:w-full">
+      <form [formGroup]="formChangePassw">
+         <div class="w-auto relative mb-8">
+            <label for="passwordOld">
+               <input #passwordOldInput [type]="hidePassOld ? 'password' : 'text'" autocomplete="off" id="passwordOld" placeholder="Contraseña anterior" formControlName="passwordOld"
+                  [ngClass]="{ 'border-red-600 focus:border-red-600 focus:ring-red-600' : getFieldForm('passwordOld', formChangePassw)?.hasError('required') && getInvalidForm('passwordOld', formChangePassw) } "
+                  class="w-full sm:w-full block p-2.5 pt-4 text-sm border-gray-400 text-gray-900 font-medium bg-white rounded-md appearance-none border focus:outline-none focus:border-primary-700 focus:ring-primary-700 peer focus:ring-1" />
+               <span
+                  [ngClass]="getFieldForm('passwordOld', formChangePassw)?.hasError('required') && getInvalidForm('passwordOld', formChangePassw) ? 'text-red-600' : ''"
+                  class="pointer-events-none absolute start-2.5 top-1 -translate-y-1/2 bg-white p-0.5 text-sm text-primary-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-sm">
+                  Contraseña anterior
+               </span>
+
+               <button type="button" (click)="hidePassOld = !hidePassOld" class="text-primary-700 text-xl absolute right-2 top-2" [disabled]="loading">
+                  @if (hidePassOld) {
+                     <fa-icon [icon]="faEyeSlash" class="icon-login"></fa-icon>
+                  }@else {
+                     <fa-icon [icon]="faEye" class="icon-login"></fa-icon>
+                  }
+               </button>
+            </label>
+            @if (getFieldForm('passwordOld', formChangePassw)?.hasError('required') && getInvalidForm('passwordOld', formChangePassw)) {
+               <div class="mb-0 flex text-left absolute pt-1">
+                   <span class="block ml-3 -mt-1 text-red-600 text-xs">
+                       La contraseña anterior es requerida.
+                   </span>
+               </div>
+            }
+        </div>
+         <div class="w-auto relative mb-8">
+            <label for="passwordNew">
+               <input [type]="hidePassNew ? 'password' : 'text'" autocomplete="off" id="passwordNew" placeholder="Nueva contraseña" formControlName="passwordNew"
+                  [ngClass]="{ 'border-red-600 focus:border-red-600 focus:ring-red-600' : getFieldForm('passwordNew', formChangePassw)?.hasError('required') && getInvalidForm('passwordNew', formChangePassw) } "
+                  class="w-full sm:w-full block p-2.5 pt-4 text-sm border-gray-400 text-gray-900 font-medium bg-white rounded-md appearance-none border focus:outline-none focus:border-primary-700 focus:ring-primary-700 peer focus:ring-1" />
+               <span
+                  [ngClass]="getFieldForm('passwordNew', formChangePassw)?.hasError('required') && getInvalidForm('passwordNew', formChangePassw) ? 'text-red-600' : ''"
+                  class="pointer-events-none absolute start-2.5 top-1 -translate-y-1/2 bg-white p-0.5 text-sm text-primary-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-sm">
+                  Nueva contraseña
+               </span>
+               <button type="button" (click)="hidePassNew = !hidePassNew" class="text-primary-700 text-xl absolute right-2 top-2" [disabled]="loading">
+                  @if (hidePassNew) {
+                     <fa-icon [icon]="faEyeSlash" class="icon-login"></fa-icon>
+                  }@else {
+                     <fa-icon [icon]="faEye" class="icon-login"></fa-icon>
+                  }
+               </button>
+            </label>
+            @if (getFieldForm('passwordNew', formChangePassw)?.hasError('required') && getInvalidForm('passwordNew', formChangePassw)) {
+               <div class="mb-0 flex text-left absolute pt-1">
+                   <span class="block ml-3 -mt-1 text-red-600 text-xs">
+                     La contraseña nueva es requerida.
+                   </span>
+               </div>
+            }
+            @if (passwordDistinct) {
+               <div class="mb-0 flex text-left absolute pt-1">
+                  <span class="block ml-3 -mt-1 text-red-600 text-xs">
+                     Las contraseñas no coinciden.
+                  </span>
+               </div>
+            }
+         </div>
+         <div class="w-auto relative mb-8">
+            <label for="passwordNewRep">
+                <input [type]="hidePassNewRep ? 'password' : 'text'" autocomplete="off" id="passwordNewRep" placeholder="Repita nueva contraseña" formControlName="passwordNewRep"
+                  [ngClass]="{ 'border-red-600 focus:border-red-600 focus:ring-red-600' : getFieldForm('passwordNewRep', formChangePassw)?.hasError('required') && getInvalidForm('passwordNewRep', formChangePassw) } "
+                  class="w-full sm:w-full block p-2.5 pt-4 text-sm border-gray-400 text-gray-900 font-medium bg-white rounded-md appearance-none border focus:outline-none focus:border-primary-700 focus:ring-primary-700 peer focus:ring-1" />
+                <span
+                  [ngClass]="getFieldForm('passwordNewRep', formChangePassw)?.hasError('required') && getInvalidForm('passwordNewRep', formChangePassw) ? 'text-red-600' : ''"
+                  class="pointer-events-none absolute start-2.5 top-1 -translate-y-1/2 bg-white p-0.5 text-sm text-primary-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-sm">
+                    Repita nueva contraseña
+                </span>
+                <button type="button" (click)="hidePassNewRep = !hidePassNewRep" class="text-primary-700 text-xl absolute right-2 top-2" [disabled]="loading">
+                  @if (hidePassNewRep) {
+                     <fa-icon [icon]="faEyeSlash" class="icon-login"></fa-icon>
+                  }@else {
+                     <fa-icon [icon]="faEye" class="icon-login"></fa-icon>
+                  }
+               </button>
+            </label>
+            @if (getFieldForm('passwordNewRep', formChangePassw)?.hasError('required') && getInvalidForm('passwordNewRep', formChangePassw)) {
+               <div class="mb-0 flex text-left absolute pt-1">
+                   <span class="block ml-3 -mt-1 text-red-600 text-xs">
+                       La contraseña nueva es requerida.
+                   </span>
+               </div>
+            }
+            @if (passwordDistinct) {
+               <div class="mb-0 flex text-left absolute pt-1">
+                  <span class="block ml-3 -mt-1 text-red-600 text-xs">
+                     Las contraseñas no coinciden.
+                  </span>
+               </div>
+            }
+         </div>
+
+         <div class="flex w-full ml-auto">
+            <button type="button" (click)="closeModal()" class="bg-gray-300 pr-6 pl-6 pt-2 pb-2 rounded-md shadow-md text-sm font-bold text-gray-800 ml-auto
+                    hover:opacity-95 hover:shadow-lg border-gray-300 border" [disabled]="loading">
+                <fa-icon [icon]="faXmark" class="block float-left pr-2"></fa-icon> Cancelar
+            </button>
+
+            <button type="button" (click)="saveChangePassword()" class="bg-secondary-600 pr-6 pl-6 pt-2 pb-2 rounded-md shadow-md text-sm font-bold ml-4 text-white
+                    hover:opacity-95 hover:shadow-lg border-gray-300 border"
+                    [disabled]="loading">
+                @if (!loading) {
+                    <fa-icon [icon]="faFloppyDisk" class="block float-left pr-2"></fa-icon> Guardar
+                }@else {
+                    Guardando
+                    <div role="status" class="float-right pl-2">
+                        <svg aria-hidden="true" class="h-5 w-5 animate-spin text-blue-400 fill-gray-300" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                        </svg>
+                    </div>
+                }
+            </button>
+         </div>
+      </form>
+   </div>
+</app-modal-first>
+
+<!--
+  Modal de confirmación de sesión (expiración y renovación).
+-->
+<!-- modal confirm session  -->
+<app-modal-first [title]="'AVISO'" [isOpen]="modalConfirmSessionOpen" [isCloseOut]="false" (confirm)="actionModalConfirmSession()" (cancelModal)="closeModalConfirmSession()">
+   <div class="pr-7 pl-7">
+      @if (msgConexionSession) {
+         {{ msgConexionSession }}
+      }@else {
+         <h2>Su sesión va expirar</h2>
+         <h2>¿Desea continuar?</h2>
+      }
+
+      @if (msgConexionSession == "") {
+         <div class="mb-8 pt-6 flex">
+            <div class="ml-auto w-8">
+               <div class="loader-spinner2"></div>
+            </div>
+            <div class="text-lg -mt-3 mr-auto font-bold">{{ timeLeft }}</div>
+         </div>
+      }@else {
+         <div class="mb-8 pt-6 flex">
+            <div class="m-auto">
+               <div class="loader-spinner2"></div>
+            </div>
+         </div>
+      }
+
+      @if (!loading) {
+         <div class="w-full flex m-auto">
+            <button type="button" (click)="closeModalConfirmSession()" [disabled]="loading"
+                  class="bg-gray-300 px-8 py-2 rounded-md shadow-md text-sm font-bold text-gray-800 block ml-auto hover:opacity-95 hover:shadow-lg border-gray-300 border">
+                  No
+            </button>
+            <button type="button" (click)="actionModalConfirmSession()" [disabled]="loading" class="bg-secondary-600 px-8 py-2 rounded-md shadow-md text-sm font-bold text-white block ml-4 :opacity-95 hover:shadow-lg border-gray-300 border">
+               Si
+            </button>
+         </div>
+      }
+
+   </div>
+</app-modal-first>
